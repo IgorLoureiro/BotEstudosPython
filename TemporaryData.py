@@ -6,10 +6,10 @@ minutosTotais = 0
 
 segundosTotais = 0
 
-Conteudos = {}
+StudyStart = 0
 
+StudyEnd = 0
 
-ToDoDictAll = {}
-
+TimerOn = False
 Counter = 0
-IdDict = 0
+IdCounter = 0

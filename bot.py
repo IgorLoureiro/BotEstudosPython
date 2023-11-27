@@ -14,8 +14,9 @@ async def send_message(message, user_message, is_private):
     except Exception as e:
         print(e)
 
+
 def run_discord_bot():
-    token = 'MTE3NDUzNjM5OTI0NTAyNTM5MQ.GJ6A2j.HiXGOmoO_KO7-o4upYB7OOnJpyqy0UenjHCRBI'
+    token = ''
 
     @client.event
     async def on_ready():
@@ -37,7 +38,5 @@ def run_discord_bot():
             await send_message(message, user_message, is_private=True)
         else:
             await send_message(message, user_message, is_private=False)
-
-
 
     client.run(token)
