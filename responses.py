@@ -1,6 +1,19 @@
 import datetime
 import TemporaryData
 import mysql.connector
+import requests
+from bardapi.constants import SESSION_HEADERS
+from bardapi import Bard
+
+token = ""
+
+session = requests.Session()
+session.headers = SESSION_HEADERS
+session.cookies.set("__Secure-1PSID", token)
+session.cookies.set("__Secure-1PSIDTS", "")
+session.cookies.set("__Secure-1PSIDCC", "")
+
+bard = Bard(token=token, session=session)
 
 conexao = mysql.connector.connect(host='localhost', user='root', password='', database='bdbot')
 cursor = conexao.cursor()
@@ -14,7 +27,8 @@ def handle_responses(message) -> str:
                 'Essas são as minhas funções principais:'
                 '\n1 - Digite: "$Timer" para acessar a aba do Crômetro'
                 '\n2 - Digite: "$ContentList" para acessar a aba de Conteúdo de Estudo'
-                '\n3 - Digite: "$ToDoList" para acessar a aba de ListaDeTarefas')
+                '\n3 - Digite: "$ToDoList" para acessar a aba de ListaDeTarefas'
+                '\n4 - Digite: "$DuvidasIA" para tirar Duvidas com a inteligência Artificial da Google')
 
     if p_message == "$contentlist":
         if TemporaryData.Counter == 0:
@@ -27,6 +41,16 @@ def handle_responses(message) -> str:
         else:
             return (f'Você já se encontra em uma Aba, digite "$Sair" para retornar para janela de Abas e após, digite '
                     f'$"ContentList" para entrar na aba de Lista de Conteudos')
+
+    if p_message == "$duvidasia":
+        if TemporaryData.Counter == 0:
+            TemporaryData.Counter = 4
+            return (f'Você entrou na aba de Duvidas com Inteligência Artifical 🤖\n\n'
+                    f'-> Digite seu texto começando com o "$" para receber uma resposta da IA integrada\n'
+                    f'-> Digite "$Sair" para voltar')
+        else:
+            return (f'Você já se encontra em uma Aba, digite "$Sair" para retornar para janela de Abas e após, digite '
+                    f'"$DuvidasIA" para entrar na aba de Duvidas com Inteligência Artifical 🤖')
 
     if p_message == "$timer":
         if TemporaryData.Counter == 0:
@@ -41,7 +65,7 @@ def handle_responses(message) -> str:
                     f'-> Digite:"$Sair" para voltar para a Aba de funcionalidades\n')
         else:
             return (f'Você já se encontra em uma Aba, digite "$Sair" para retornar para janela de Abas e após, digite '
-                    f'$"Timer" para entrar na aba do Cronometro ⏲️')
+                    f'"$Timer" para entrar na aba do Cronometro ⏲️')
 
     if p_message == '$start' and TemporaryData.Counter == 3:
         if not TemporaryData.TimerOn:
@@ -261,7 +285,13 @@ def handle_responses(message) -> str:
         return ('Essas são as minhas funções principais:'
                 '\n1 - Digite: "$Timer" para acessar a aba do Crômetro'
                 '\n2 - Digite: "$ContentList" para acessar a aba de Conteúdo de Estudo'
-                '\n3 - Digite: "$ToDoList" para acessar a aba de ListaDeTarefas')
+                '\n3 - Digite: "$ToDoList" para acessar a aba de ListaDeTarefas'
+                '\n4 - Digite: "$DuvidasIA" para tirar Duvidas com a inteligência Artificial da Google')
+
+    if p_message[0] == '$' and TemporaryData.Counter == 4:
+        cmessage = message[1:]
+        resposta = (bard.get_answer(cmessage)['content'])
+        return f'{resposta}'
 
     if p_message[0] == '$':
         return 'Nenhum comando válido inserido'
